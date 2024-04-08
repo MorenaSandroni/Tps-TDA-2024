@@ -7,6 +7,6 @@
 
 # TP 1
 
-Dentro de este repositorio se encuentran una carpeta llamada "tp1" donde se encuentra el codigo que corresponde a la resolucion del ejecicio y su correspondiente informe.
+Dentro de este repositorio se encuentran una carpeta llamada "tp1" donde se encuentra el codigo que corresponde a la resolución del ejercicio y su correspondiente informe.
   - Al correr el main directamente se ejecutan los 7 casos de prueba.
       
