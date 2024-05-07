@@ -1,10 +1,15 @@
 def max_soldados_elim(x, f):
     n = len(x)
-    DP = [0] * (n + 1)
-    for i in range(1, n + 1):
-        DP[i] = max(DP[j] + min(x[i - 1], f[i - j - 1]) for j in range(i))
+    G = [[0] * (n + 1) for _ in range(n + 1)]
 
-    return DP[n]
+    for i in range(1, n + 1):
+        for j in range(1, i + 1):
+          if j == i:
+            G[i][j] = min(x[i - 1], f[i - 1])
+          else:
+            G[i][j] = max(G[i - j]) + min(x[i - 1], f[j - 1])
+
+    return max(G[n])
 
 def leer_archivo(nombre_archivo):
     lista_x = []
@@ -57,4 +62,3 @@ if __name__ == '__main__':
     x, f = leer_archivo('5000.txt')
     assert max_soldados_elim(x, f) == 504220
     print("OK TEST 10")
-    
