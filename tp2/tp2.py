@@ -1,45 +1,37 @@
-def max_soldados_elim(x, f):
+def array_soldados_elim(x, f):
     n = len(x)
-    G = [[0] * (n + 1) for _ in range(n + 1)]
-
+    DP = [0] * (n + 1)
     for i in range(1, n + 1):
-        for j in range(1, i + 1):
-          if j == i:
-            G[i][j] = min(x[i - 1], f[i - 1])
-          else:
-            G[i][j] = max(G[i - j]) + min(x[i - 1], f[j - 1])
+        DP[i] = max(DP[j] + min(x[i - 1], f[i - j - 1]) for j in range(i))
 
-    return max(G[n])
-
-def matriz_soldados_elim(x, f):
-    n = len(x)
-    DP = [[0] * (n + 1) for _ in range(n + 1)]
-
-    for i in range(1, n + 1):
-        for j in range(0, i + 1):
-          if j == 0:
-            DP[i][j] = max(DP[i - 1])
-          elif j == i:
-            DP[i][j] = min(x[i - 1], f[i - 1])
-          else:
-            DP[i][j] = DP[i - j + 1][0] + min(x[i - 1], f[j - 1])
     return DP
 
-def reconstruir_camino(x,f):
-  G = matriz_soldados_elim(x, f)
-  n = len(x)
+def max_soldados_elim(x, f):
+    return array_soldados_elim(x,f)[-1]
 
-  #Armo la lista llena de "Cargar" y pongo "Atacar" al final porque siempre se ataca al final
-  estrategia = ["Cargar" for _ in range(n - 1)]
-  estrategia.append("Atacar")
-  i = n
 
-  while( i > 0 ):
-    j = G[i].index(max(G[i]))
-    i = i - j
-    estrategia[i - 1] = "Atacar"
+def reconstruir_camino(x, f, DP):
+    n = len(x)
+    camino = []
+    i = n  # Empezamos desde el final
 
-  return estrategia
+    while i > 0:
+        for j in range(i):
+            if DP[i] == DP[j] + min(x[i - 1], f[i - j - 1]):
+                camino.append(i - 1) 
+                i = j
+                break
+
+    camino.reverse()  # Porque construimos el camino desde el final
+
+    # Ahora asociamos los indices conseguidos a las acciones correspondientes
+
+    estrategia = ["Cargar"] * n
+
+    for i in camino:
+        estrategia[i] = "Atacar" # Si el indice está en el camino, significa que en ese minuto se atacó
+
+    return estrategia
 
 def leer_archivo(nombre_archivo):
     lista_x = []
@@ -70,7 +62,7 @@ if __name__ == '__main__':
     print("OK TEST 1")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
     
     x, f = leer_archivo('10_bis.txt')
@@ -79,7 +71,7 @@ if __name__ == '__main__':
     print("OK TEST 2") 
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
 
     x, f = leer_archivo('10.txt')
@@ -88,7 +80,7 @@ if __name__ == '__main__':
     print("OK TEST 3")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
 
     x, f = leer_archivo('20.txt')
@@ -97,7 +89,7 @@ if __name__ == '__main__':
     print("OK TEST 4")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
 
     x, f = leer_archivo('50.txt')
@@ -106,7 +98,7 @@ if __name__ == '__main__':
     print("OK TEST 5")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
 
     x, f = leer_archivo('100.txt')
@@ -115,7 +107,7 @@ if __name__ == '__main__':
     print("OK TEST 6")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
     x, f = leer_archivo('200.txt')
     resultado = max_soldados_elim(x, f)
@@ -123,7 +115,7 @@ if __name__ == '__main__':
     print("OK TEST 7")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
 
     x, f = leer_archivo('500.txt')
@@ -132,7 +124,7 @@ if __name__ == '__main__':
     print("OK TEST 8")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
 
     x, f = leer_archivo('1000.txt')
@@ -141,7 +133,7 @@ if __name__ == '__main__':
     print("OK TEST 9")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
 
     x, f = leer_archivo('5000.txt')
@@ -150,5 +142,5 @@ if __name__ == '__main__':
     print("OK TEST 10")
     if mostrar_caminos:
         print("Caminos reconstruidos:")
-        caminos = reconstruir_camino(x, f)
+        caminos = reconstruir_camino(x, f, array_soldados_elim(x, f))
         print(caminos)
