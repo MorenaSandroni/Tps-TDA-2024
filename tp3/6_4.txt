@@ -6,9 +6,3 @@ Sangok, 86
 Eska, 484
 Huu, 677
 Ming-Hua, 62
-
-Grupo 1: Huu
-Grupo 2: Eska
-Grupo 3: Sura
-Grupo 4: Hama, Sangok, Ming-Hua
-Coeficiente: 807418
