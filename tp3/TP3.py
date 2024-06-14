@@ -1,7 +1,8 @@
 import itertools
 import time
 import random
-
+import numpy as np
+from scipy.optimize import linprog
 
 # Backtracking
 def calcular_objetivo(grupos):
@@ -56,224 +57,55 @@ def distribuir_maestros(maestros, k):
 
     return suma_cuadrados(sumas_grupos), grupos
 
-# Run usage
+# Aproximacion Lineal
+def aproximacionLineal(maestros, k):
+    # Setup data
+    habilidades = [habilidad for nombre, habilidad in maestros]
+    n = len(habilidades)
+    habilidades = np.array(habilidades)
+    # Crear variables de decisión
+    num_vars = n * k
+    bounds = [(0, 1)] * num_vars + [(None, None), (None, None)]  # Agregar M y m
 
-#
-# def run_tests_only_assert(test_files, expected_values):
-#     for i in range(len(test_files)):
-#         file_path = test_files[i]
-#         expected_value = expected_values[i]
-#         maestros, k, n = read_file(file_path)
-#         print(f"File = {file_path}")
-#         best_value, best_partition = backtracking(maestros, k)
-#         try:
-#             assert best_value == expected_value
-#             print(f"OK")
-#         except AssertionError:
-#             print(f"ERROR: Valor óptimo para {file_path} es {best_value}, pero se esperaba {expected_value}")
-#         print()
-#
-# if __name__ == '__main__':
-#     set_simple_rel = input("Para correr tests simples ingrese S, para correr tests para relaciones ingrese R").upper()
-#     if set_simple_rel == 'S':
-#         set_data = input("Para correr los tests con los archivos de prueba ingrese T, para correr los tests con datos generados aleatoriamente ingrese A").upper()
-#         if set_data == 'T':
-#             test_files = ['5_2.txt', '6_3.txt', '6_4.txt', '8_3.txt', '10_3.txt', '10_5.txt',
-#                           '11_5.txt', '14_3.txt', '14_4.txt', '14_6.txt', '15_4.txt',
-#                           '15_6.txt', '17_5.txt', '17_7.txt', '17_10.txt', '18_6.txt', '18_8.txt', '20_4.txt',
-#                           '20_5.txt', '20_8.txt']
-#
-#             expected_values = [1894340, 1640690, 807418, 4298131, 385249, 355882, 2906564,
-#                                15659106, 15292055, 10694510, 4311889, 6377225, 15974095, 11513230,
-#                                5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
-#
-#             select_algorithm = input("Para correr el algoritmo de backtracking ingrese B, para correr el algoritmo de aproximacion ingrese A ").upper()
-#             if select_algorithm == 'B':
-#                 run_only_assert = input(
-#                     "Para correr unicamente los asserts ingrese T, para correr los asserts con mas informacion ingrese F ").upper() == 'T'
-#                 if run_only_assert:
-#                     run_tests_only_assert(test_files, expected_values)
-#                 else:
-#                     run_tests(test_files, expected_values, select_algorithm)
-#
-#             elif select_algorithm == 'A':
-#                 run_tests(test_files, expected_values, select_algorithm)
-#
-#         elif set_data == 'A':
-#             cant_sets_aleatorios = int(input("Ingrese la cantidad de sets aleatorios a generar: "))
-#             select_algorithm = input("Para correr el algoritmo de backtracking ingrese B, para correr el algoritmo de aproximacion ingrese A, \n"
-#                                      "si desea correr ambos ingrese BA").upper()
-#             if select_algorithm == 'B':
-#                 print("Backtracking")
-#                 for i in range(cant_sets_aleatorios):
-#                     num_maestros = random.randint(5, 20)
-#                     max_habilidad = random.randint(1, 100)
-#                     maestros = generar_datos_prueba(num_maestros, max_habilidad)
-#                     num_grupos = random.randint(2, 5)
-#                     print(f"Set aleatorio {i + 1}")
-#                     print(f"Maestros: {maestros}")
-#                     print(f"n = {num_maestros}")
-#                     print(f"k = {num_grupos}")
-#                     start_time = time.time()
-#                     best_value, best_partition = backtracking(maestros, num_grupos)
-#                     end_time = time.time()
-#                     print(f"Mejor partición: {best_partition}")
-#                     print(f"Valor óptimo: {best_value}")
-#                     print(f"Tiempo de ejecución: {end_time - start_time:.4f} segundos")
-#                     print()
-#             elif select_algorithm == 'A':
-#                 print("Aproximacion")
-#                 for i in range(cant_sets_aleatorios):
-#                     num_maestros = random.randint(5, 20)
-#                     max_habilidad = random.randint(1, 100)
-#                     maestros = generar_datos_prueba(num_maestros, max_habilidad)
-#                     num_grupos = random.randint(2, 5)
-#                     print(f"Set aleatorio {i + 1}")
-#                     print(f"Maestros: {maestros}")
-#                     print(f"n = {num_maestros}")
-#                     print(f"k = {num_grupos}")
-#                     start_time = time.time()
-#                     best_value, best_partition = distribuir_maestros(maestros, num_grupos)
-#                     end_time = time.time()
-#                     print(f"Mejor partición: {best_partition}")
-#                     print(f"Valor óptimo: {best_value}")
-#                     print(f"Tiempo de ejecución: {end_time - start_time:.4f} segundos")
-#                     print()
-#             elif select_algorithm == 'BA':
-#                 for i in range(cant_sets_aleatorios):
-#                     num_maestros = random.randint(5, 20)
-#                     max_habilidad = random.randint(1, 100)
-#                     maestros = generar_datos_prueba(num_maestros, max_habilidad)
-#                     num_grupos = random.randint(2, 4)
-#                     print(f"Set aleatorio {i + 1}")
-#                     print(f"Maestros: {maestros}")
-#                     print(f"n = {num_maestros}")
-#                     print(f"k = {num_grupos}")
-#                     print()
-#                     print("Backtracking")
-#                     start_time_bt = time.time()
-#                     best_value_bt, best_partition_bt = backtracking(maestros, num_grupos)
-#                     end_time_bt = time.time()
-#                     print(f"Mejor partición: {best_partition_bt}")
-#                     print(f"Valor óptimo: {best_value_bt}")
-#                     print(f"Tiempo de ejecución: {end_time_bt - start_time_bt:.4f} segundos")
-#                     print()
-#                     print("Aproximacion")
-#                     start_time_a = time.time()
-#                     best_value_a, best_partition_a = distribuir_maestros(maestros, num_grupos)
-#                     end_time_a = time.time()
-#                     print(f"Mejor partición: {best_partition_a}")
-#                     print(f"Valor óptimo: {best_value_a}")
-#                     print(f"Tiempo de ejecución: {end_time_a - start_time_a:.4f} segundos")
-#                     print()
-#     elif set_simple_rel == 'R':
-#         set_algorithm = input("Para correr el algoritmo de backtracking con el de aproximacion ingrese BA, para correr el algoritmo de \n"
-#                               "bactracking con el de aproximacion lineal ingrese BL").upper()
-#         if set_algorithm == 'BA':
-#             set_data = input(
-#                 "Para correr las relacion con archivos de prueba ingrese T, para las relaciones con datos generados aleatoriamente ingrese A, \n"
-#                 "para correr las relaciones con volumenes inmanejables ingrese I ").upper()
-#             if set_data == 'T':
-#                 test_files = ['5_2.txt', '6_3.txt', '6_4.txt', '8_3.txt', '10_3.txt', '10_5.txt',
-#                               '11_5.txt', '14_3.txt', '14_4.txt', '14_6.txt', '15_4.txt',
-#                               '15_6.txt', '17_5.txt', '17_7.txt', '17_10.txt', '18_6.txt', '18_8.txt', '20_4.txt',
-#                               '20_5.txt', '20_8.txt']
-#
-#                 expected_values = [1894340, 1640690, 807418, 4298131, 385249, 355882, 2906564,
-#                                    15659106, 15292055, 10694510, 4311889, 6377225, 15974095, 11513230,
-#                                    5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
-#                 for i in range(len(test_files)):
-#                     file_path = test_files[i]
-#                     expected_value = expected_values[i]
-#                     maestros, k, n = read_file(file_path)
-#                     print(f"File = {file_path}")
-#                     print(f"n = {n}")
-#                     print(f"k = {k}")
-#                     print(f"Maestros: {maestros}")
-#                     print(f"Valor esperado: {expected_value}")
-#                     print("Backtracking")
-#                     start_time_bt = time.time()
-#                     best_value_bt, best_partition_bt = backtracking(maestros, k)
-#                     end_time_bt = time.time()
-#                     print(f"Mejor partición: {best_partition_bt}")
-#                     print(f"Valor óptimo: {best_value_bt}")
-#                     print(f"Tiempo de ejecución: {end_time_bt - start_time_bt:.4f} segundos")
-#                     print()
-#                     print("Aproximacion")
-#                     start_time_a = time.time()
-#                     best_value_a, best_partition_a = distribuir_maestros(maestros, k)
-#                     end_time_a = time.time()
-#                     print(f"Mejor partición: {best_partition_a}")
-#                     print(f"Valor óptimo: {best_value_a}")
-#                     print(f"Tiempo de ejecución: {end_time_a - start_time_a:.4f} segundos")
-#                     print()
-#                     relation = best_value_a / best_value_bt
-#                     print(f"Relacion: {relation}")
-#                     print()
-#             elif set_data == 'A':
-#                 cant_sets_aleatorios = int(input("Ingrese la cantidad de sets aleatorios a generar: "))
-#                 for i in range(cant_sets_aleatorios):
-#                     num_maestros = random.randint(5, 20)
-#                     max_habilidad = random.randint(1, 100)
-#                     maestros = generar_datos_prueba(num_maestros, max_habilidad)
-#                     num_grupos = random.randint(2, 4)
-#                     print(f"Set aleatorio {i + 1}")
-#                     print(f"Maestros: {maestros}")
-#                     print(f"n = {num_maestros}")
-#                     print(f"k = {num_grupos}")
-#                     print()
-#                     print("Backtracking")
-#                     start_time_bt = time.time()
-#                     best_value_bt, best_partition_bt = backtracking(maestros, num_grupos)
-#                     end_time_bt = time.time()
-#                     print(f"Mejor partición: {best_partition_bt}")
-#                     print(f"Valor óptimo: {best_value_bt}")
-#                     print(f"Tiempo de ejecución: {end_time_bt - start_time_bt:.4f} segundos")
-#                     print()
-#                     print("Aproximacion")
-#                     start_time_a = time.time()
-#                     best_value_a, best_partition_a = distribuir_maestros(maestros, num_grupos)
-#                     end_time_a = time.time()
-#                     print(f"Mejor partición: {best_partition_a}")
-#                     print(f"Valor óptimo: {best_value_a}")
-#                     print(f"Tiempo de ejecución: {end_time_a - start_time_a:.4f} segundos")
-#                     print()
-#                     relation = best_value_a / best_value_bt
-#                     print(f"Relacion: {relation}")
-#                     print()
-#             elif set_data == 'I':
-#                 print("Por ser volumenes inmanejables no corremos Backtracking, pero contamos con los valores optimos")
-#                 test_files = ['17_5.txt', '17_7.txt', '17_10.txt', '18_6.txt', '18_8.txt', '20_4.txt',
-#                               '20_5.txt', '20_8.txt']
-#
-#                 expected_values = [15974095, 11513230,5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
-#                 for i in range(len(test_files)):
-#                     file_path = test_files[i]
-#                     expected_value = expected_values[i]
-#                     maestros, k, n = read_file(file_path)
-#                     print(f"File = {file_path}")
-#                     print(f"n = {n}")
-#                     print(f"k = {k}")
-#                     print(f"Maestros: {maestros}")
-#                     print(f"Valor esperado: {expected_value}")
-#                     print()
-#                     print("Aproximacion")
-#                     start_time_a = time.time()
-#                     best_value_a, best_partition_a = distribuir_maestros(maestros, k)
-#                     end_time_a = time.time()
-#                     print(f"Mejor partición: {best_partition_a}")
-#                     print(f"Valor óptimo: {best_value_a}")
-#                     print(f"Tiempo de ejecución: {end_time_a - start_time_a:.4f} segundos")
-#                     print()
-#                     relation = best_value_a / expected_value
-#                     print(f"Relacion: {relation}")
-#                     print()
+    # Restricción: cada maestro debe estar en un solo subgrupo
+    A_eq = np.zeros((n, num_vars + 2))
+    for i in range(n):
+        for j in range(k):
+            A_eq[i, i * k + j] = 1
+        b_eq = np.ones(n)
 
+    # Restricciones para M y m
+    A_ub = np.zeros((2 * k, num_vars + 2))
+    b_ub = np.zeros(2 * k)
 
-import random
-import time
+    for j in range(k):
+        for i in range(n):
+            A_ub[j, i * k + j] = habilidades[i]
+            A_ub[k + j, i * k + j] = -habilidades[i]
+        A_ub[j, -2] = -1  # M constraint
+        A_ub[k + j, -1] = 1  # m constraint
 
-# Define tus funciones aquí
+    # Definir la función objetivo para minimizar M - m
+    c = np.zeros(num_vars + 2)
+    c[-2] = 1  # Max variable
+    c[-1] = -1  # Min variable
+
+    # Medir tiempo de ejecución del modelo de programación lineal con HiGHS
+    res = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
+
+    # Resultado
+    if res.success:
+        solution = res.x[:-2].reshape(n, k)
+        # Asegurarse de que cada maestro está asignado a un grupo
+        assigned = np.sum(solution, axis=1)
+        if np.allclose(assigned, 1):
+            subgrupos = [np.where(solution[:, j] >= 0.5)[0] for j in range(k)]
+            sum_squares = sum(np.sum(habilidades[subgrupo]) ** 2 for subgrupo in subgrupos)
+            return sum_squares, subgrupos
+        else:
+            print("Error: No todos los maestros están asignados a un grupo.")
+    else:
+        print("No se encontró una solución óptima.")
 
 def read_file(file_path):
     with open(file_path, 'r') as file:
@@ -347,6 +179,8 @@ def run_test_files(test_files, expected_values, func):
         func = backtracking
     elif func == '2':
         func = distribuir_maestros
+    elif func == '3':
+        func = aproximacionLineal
     for i in range(len(test_files)):
         file_path = test_files[i]
         expected_value = expected_values[i]
@@ -363,6 +197,8 @@ def run_aleatory_tests(qty_sets, func):
         func = backtracking
     elif func == '2':
         func = distribuir_maestros
+    elif func == '3':
+        func = aproximacionLineal
 
     for i in range(qty_sets):
         max_habilidad = random.randint(1, 100)
@@ -426,12 +262,9 @@ def run_relations():
     if option == '1':
         if option_data == '1':
             test_files = ['5_2.txt', '6_3.txt', '6_4.txt', '8_3.txt', '10_3.txt', '10_5.txt',
-                          '11_5.txt', '14_3.txt', '14_4.txt', '14_6.txt', '15_4.txt',
-                          '15_6.txt', '17_5.txt', '17_7.txt', '17_10.txt', '18_6.txt', '18_8.txt', '20_4.txt',
-                          '20_5.txt', '20_8.txt']
+                          '11_5.txt', '14_3.txt', '14_4.txt', '14_6.txt', '15_4.txt', '15_6.txt']
             expected_values = [1894340, 1640690, 807418, 4298131, 385249, 355882, 2906564,
-                               15659106, 15292055, 10694510, 4311889, 6377225, 15974095, 11513230,
-                               5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
+                               15659106, 15292055, 10694510, 4311889, 6377225]
             run_file_relation(test_files, expected_values, [backtracking, distribuir_maestros])
         elif option_data == '2':
             qty_sets = int(input("Ingrese la cantidad de sets aleatorios a generar: "))
@@ -444,6 +277,25 @@ def run_relations():
 
             expected_values = [15974095, 11513230, 5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
             run_file_relation(test_files, expected_values, [distribuir_maestros])
+    elif option == '2':
+        if option_data == '1':
+            test_files = ['5_2.txt', '6_3.txt', '6_4.txt', '8_3.txt', '10_3.txt', '10_5.txt',
+                          '11_5.txt', '14_3.txt', '14_4.txt', '14_6.txt', '15_4.txt', '15_6.txt']
+            expected_values = [1894340, 1640690, 807418, 4298131, 385249, 355882, 2906564,
+                               15659106, 15292055, 10694510, 4311889, 6377225]
+            run_file_relation(test_files, expected_values, [backtracking, aproximacionLineal])
+        elif option_data == '2':
+            qty_sets = int(input("Ingrese la cantidad de sets aleatorios a generar: "))
+            run_aleatory_relation(qty_sets, [backtracking, aproximacionLineal])
+
+        elif option_data == '3':
+            print("Por ser volumenes inmanejables no corremos Backtracking, pero contamos con los valores optimos")
+            test_files = ['17_5.txt', '17_7.txt', '17_10.txt', '18_6.txt', '18_8.txt', '20_4.txt',
+                          '20_5.txt', '20_8.txt']
+
+            expected_values = [15974095, 11513230, 5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
+            run_file_relation(test_files, expected_values, [aproximacionLineal])
+
 
 def main():
     while True:
