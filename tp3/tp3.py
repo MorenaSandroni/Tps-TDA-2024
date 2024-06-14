@@ -177,7 +177,7 @@ def print_results(file_path=None, aleatory=None, n=0, k=0, maestros=[()], best_p
         print(f"Valor esperado: {expected_value}")
     print(f"Tiempo de ejecución: {end_time - start_time:.4f} segundos")
     print()
-def relation_results(file_path=None, aleatory=None, n=0, k=0, maestros=[(str, int)], expected_value=None, funcs=[],max=-1):
+def relation_results(file_path=None, aleatory=None, n=0, k=0, maestros=[(str, int)], expected_value=None, funcs=[]):
     if file_path:
         print(f"File = {file_path}")
     if aleatory:
@@ -278,8 +278,7 @@ def run_file_relation(test_files, expected_values,funcs):
         file_path = test_files[i]
         expected_value = expected_values[i]
         maestros, k, n = read_file(file_path)
-        relation_results(file_path=file_path, n=n, k=k, maestros=maestros, expected_value= expected_value, funcs=funcs, max=max)
-    print(f" MAX FINAL: {max}")
+        relation_results(file_path=file_path, n=n, k=k, maestros=maestros, expected_value= expected_value, funcs=funcs)
 def run_aleatory_relation(qty_sets, funcs):
     max = -1
     for i in range(qty_sets):
@@ -287,8 +286,7 @@ def run_aleatory_relation(qty_sets, funcs):
         n = random.randint(5, 20)
         maestros = generar_datos_prueba(n, max_habilidad)
         k = random.randint(2, 5)
-        relation_results(aleatory = i+1, n=n, k=k, maestros=maestros, funcs=funcs, max=max)
-    print(f" MAX FINAL: {max}")
+        relation_results(aleatory = i+1, n=n, k=k, maestros=maestros, funcs=funcs)
 def run_relations():
     print("1. Backtracking VS Aproximación")
     print("2. Backtracking VS Programación Lineal")
