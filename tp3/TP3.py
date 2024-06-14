@@ -3,6 +3,19 @@ import time
 import random
 import numpy as np
 from scipy.optimize import linprog
+import heapq
+
+# Certificador Eficiente NP
+def certificador_eficiente(subgrupos, B):
+    suma_cuadrados = 0
+
+    # Para cada subgrupo S_j, calcular la suma de las habilidades y elevarla al cuadrado
+    for subgrupo in subgrupos:
+        suma_subgrupo = sum(subgrupo)
+        suma_cuadrados += suma_subgrupo ** 2
+
+    # Comparar la suma total de los cuadrados con B
+    return suma_cuadrados <= B
 
 # Backtracking
 def calcular_objetivo(grupos):
@@ -41,7 +54,7 @@ def backtracking(x, k, grupos_actuales=None, indice_actual=0, mejor_valor=float(
 
     return mejor_valor, mejor_grupo
 
-# Aproximacion punto 5
+# Aproximacion (Punto 5)
 def suma_cuadrados(sumas_grupos):
     return sum(suma ** 2 for suma in sumas_grupos)
 
@@ -107,6 +120,25 @@ def aproximacionLineal(maestros, k):
     else:
         print("No se encontró una solución óptima.")
 
+# Nueva Aproximacion (Punto 6)
+def distribuir_maestros_equilibrio(maestros, k):
+    maestros_ordenados = sorted(maestros, key=lambda x: x[1], reverse=True)
+    grupos = [[] for _ in range(k)]
+    sumas_grupos = [0] * k
+    heap = [(0, i) for i in range(k)]  # (suma, índice del grupo)
+    heapq.heapify(heap)
+
+    # Asigna de manera alternada para equilibrar la carga
+    for nombre, habilidad in maestros_ordenados:
+        suma_actual, indice_grupo = heapq.heappop(heap)
+        grupos[indice_grupo].append(nombre)
+        suma_actual += habilidad
+        sumas_grupos[indice_grupo] = suma_actual
+        heapq.heappush(heap, (suma_actual, indice_grupo))
+
+    return suma_cuadrados(sumas_grupos), grupos
+
+# Run Usage
 def read_file(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -140,12 +172,12 @@ def print_results(file_path=None, aleatory=None, n=0, k=0, maestros=[()], best_p
     print(f"k = {k}")
     print(f"Maestros: {maestros}")
     print(f"Mejor partición: {best_partition}")
-    print(f"Valor óptimo: {best_value}")
+    print(f"Valor obtenido: {best_value}")
     if expected_value is not None:
         print(f"Valor esperado: {expected_value}")
     print(f"Tiempo de ejecución: {end_time - start_time:.4f} segundos")
     print()
-def relation_results(file_path=None, aleatory=None, n=0, k=0, maestros=[(str, int)], expected_value=None, funcs=[]):
+def relation_results(file_path=None, aleatory=None, n=0, k=0, maestros=[(str, int)], expected_value=None, funcs=[],max=-1):
     if file_path:
         print(f"File = {file_path}")
     if aleatory:
@@ -162,7 +194,7 @@ def relation_results(file_path=None, aleatory=None, n=0, k=0, maestros=[(str, in
         best_value, best_partition = func(maestros, k)
         end_time = time.time()
         print(f"Mejor partición: {best_partition}")
-        print(f"Valor óptimo: {best_value}")
+        print(f"Valor obtenido: {best_value}")
         print(f"Tiempo de ejecución: {end_time - start_time:.4f} segundos")
         print()
         values.append(best_value)
@@ -171,9 +203,11 @@ def relation_results(file_path=None, aleatory=None, n=0, k=0, maestros=[(str, in
     else:
         relation = values[0] / expected_value
 
+    if relation > max:
+        max = relation
+    print(f" MAX INTER: {max}")
     print(f"Relacion: {relation}")
     print()
-
 def run_test_files(test_files, expected_values, func):
     if func == '1':
         func = backtracking
@@ -181,6 +215,8 @@ def run_test_files(test_files, expected_values, func):
         func = distribuir_maestros
     elif func == '3':
         func = aproximacionLineal
+    elif func == '4':
+        func = distribuir_maestros_equilibrio
     for i in range(len(test_files)):
         file_path = test_files[i]
         expected_value = expected_values[i]
@@ -191,7 +227,6 @@ def run_test_files(test_files, expected_values, func):
         print_results(file_path = file_path, n = n, k = k, maestros = maestros,
                       best_partition = best_partition, best_value = best_value,
                       start_time = start_time, end_time = end_time, expected_value = expected_value)
-
 def run_aleatory_tests(qty_sets, func):
     if func == '1':
         func = backtracking
@@ -199,6 +234,8 @@ def run_aleatory_tests(qty_sets, func):
         func = distribuir_maestros
     elif func == '3':
         func = aproximacionLineal
+    elif func == '4':
+        func = distribuir_maestros_equilibrio
 
     for i in range(qty_sets):
         max_habilidad = random.randint(1, 100)
@@ -211,7 +248,6 @@ def run_aleatory_tests(qty_sets, func):
         print_results(aleatory = i+1, n = n, k = k, maestros = maestros,
                       best_partition = best_partition, best_value = best_value,
                       start_time = start_time, end_time = end_time)
-
 def run_tests():
     print("1. Datos de catedra")
     print("2. Datos aleatorios")
@@ -219,6 +255,7 @@ def run_tests():
     print("1. Algoritmo Backtraking")
     print("2. Algoritmo Aproximación")
     print("3. Algoritmo Programacion Lineal")
+    print("4. Algoritmo de Aproximacion por Equilibrio de Carga (Punto 6)")
     option_alg = input("Ingrese el número de la opción que desea: ")
     if option == '1':
         test_files = ['5_2.txt', '6_3.txt', '6_4.txt', '8_3.txt', '10_3.txt', '10_5.txt',
@@ -235,25 +272,27 @@ def run_tests():
     elif option == '2':
         qty_sets = int(input("Ingrese la cantidad de sets aleatorios a generar: "))
         run_aleatory_tests(qty_sets, option_alg)
-
 def run_file_relation(test_files, expected_values,funcs):
+    max = -1
     for i in range(len(test_files)):
         file_path = test_files[i]
         expected_value = expected_values[i]
         maestros, k, n = read_file(file_path)
-        relation_results(file_path=file_path, n=n, k=k, maestros=maestros, expected_value= expected_value, funcs=funcs)
-
+        relation_results(file_path=file_path, n=n, k=k, maestros=maestros, expected_value= expected_value, funcs=funcs, max=max)
+    print(f" MAX FINAL: {max}")
 def run_aleatory_relation(qty_sets, funcs):
+    max = -1
     for i in range(qty_sets):
         max_habilidad = random.randint(1, 100)
         n = random.randint(5, 20)
         maestros = generar_datos_prueba(n, max_habilidad)
         k = random.randint(2, 5)
-        relation_results(aleatory = i+1, n=n, k=k, maestros=maestros, funcs=funcs)
-
+        relation_results(aleatory = i+1, n=n, k=k, maestros=maestros, funcs=funcs, max=max)
+    print(f" MAX FINAL: {max}")
 def run_relations():
     print("1. Backtracking VS Aproximación")
     print("2. Backtracking VS Programación Lineal")
+    print("3. Backtracking VS Aproximación por Equilibrio de Carga (Punto 6)")
     option = input("Ingrese el número de la opción que desea: ")
     print("1. Datos de catedra")
     print("2. Datos aleatorios")
@@ -295,6 +334,24 @@ def run_relations():
 
             expected_values = [15974095, 11513230, 5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
             run_file_relation(test_files, expected_values, [aproximacionLineal])
+    elif option == '3':
+        if option_data == '1':
+            test_files = ['5_2.txt', '6_3.txt', '6_4.txt', '8_3.txt', '10_3.txt', '10_5.txt',
+                          '11_5.txt', '14_3.txt', '14_4.txt', '14_6.txt', '15_4.txt', '15_6.txt']
+            expected_values = [1894340, 1640690, 807418, 4298131, 385249, 355882, 2906564,
+                               15659106, 15292055, 10694510, 4311889, 6377225]
+            run_file_relation(test_files, expected_values, [backtracking, distribuir_maestros_equilibrio])
+        elif option_data == '2':
+            qty_sets = int(input("Ingrese la cantidad de sets aleatorios a generar: "))
+            run_aleatory_relation(qty_sets, [backtracking, distribuir_maestros_equilibrio])
+
+        elif option_data == '3':
+            print("Por ser volumenes inmanejables no corremos Backtracking, pero contamos con los valores optimos")
+            test_files = ['17_5.txt', '17_7.txt', '17_10.txt', '18_6.txt', '18_8.txt', '20_4.txt',
+                          '20_5.txt', '20_8.txt']
+
+            expected_values = [15974095, 11513230, 5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
+            run_file_relation(test_files, expected_values, [distribuir_maestros_equilibrio])
 
 
 def main():
