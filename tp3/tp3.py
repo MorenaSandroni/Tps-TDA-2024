@@ -202,10 +202,6 @@ def relation_results(file_path=None, aleatory=None, n=0, k=0, maestros=[(str, in
         relation = values[1] / values[0]
     else:
         relation = values[0] / expected_value
-
-    if relation > max:
-        max = relation
-    print(f" MAX INTER: {max}")
     print(f"Relacion: {relation}")
     print()
 def run_test_files(test_files, expected_values, func):
@@ -294,7 +290,8 @@ def run_relations():
     option = input("Ingrese el número de la opción que desea: ")
     print("1. Datos de catedra")
     print("2. Datos aleatorios")
-    print("3. Datos inmanejables")
+    print("3. Datos inmanejables Catedra")
+    print("4. Datos inmanejables Propios")
     option_data= input("Ingrese el número de la opción que desea: ")
     if option == '1':
         if option_data == '1':
@@ -313,6 +310,23 @@ def run_relations():
                           '20_5.txt', '20_8.txt']
 
             expected_values = [15974095, 11513230, 5427764, 10322822, 11971097, 21081875, 16828799, 11417428]
+            run_file_relation(test_files, expected_values, [distribuir_maestros])
+        elif option_data == '4':
+            print("Por ser volumenes inmanejables no corremos Backtracking, pero contamos con los valores optimos")
+            test_files = ['propio_32_4.txt', 'propio_36_4.txt', 'propio_40_4.txt', 'propio_44_4.txt', 'propio_48_4.txt',
+                          'propio_52_4.txt', 'propio_56_4.txt', 'propio_60_4.txt', 'propio_64_4.txt', 'propio_68_4.txt',
+                          'propio_30_6.txt', 'propio_36_6.txt', 'propio_42_6.txt', 'propio_48_6.txt', 'propio_54_6.txt',
+                          'propio_60_6.txt', 'propio_66_6.txt', 'propio_72_6.txt', 'propio_78_6.txt', 'propio_84_6.txt',
+                          'propio_24_8.txt', 'propio_32_8.txt', 'propio_40_8.txt', 'propio_48_8.txt', 'propio_56_8.txt',
+                          'propio_64_8.txt', 'propio_72_8.txt', 'propio_80_8.txt', 'propio_88_8.txt', 'propio_96_8.txt']
+
+
+            expected_values = [2232036, 1674436, 2471184, 3572100, 3444736, 2722500, 3794704, 5134756, 5560164,
+                               6100900, 786264, 1172184, 1997574, 1554486, 2661336, 2973696, 4667544, 3493014,
+                               8582496, 4510134, 387200, 658952, 1095200, 1465472, 3421728, 2080800, 3328200,
+                               3645000, 3886472, 7872512]
+
+
             run_file_relation(test_files, expected_values, [distribuir_maestros])
     elif option == '2':
         if option_data == '1':

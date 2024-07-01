@@ -1,0 +1,32 @@
+# La primera linea indica la cantidad de grupos a formar, las siguientes son de la forma 'nombre maestro, habilidad'
+6
+Ming-Hua_0_0, 105
+Ming-Hua_0_1, 87
+Ming-Hua_0_2, 37
+Ming-Hua_0_3, 68
+Ming-Hua_0_4, 65
+Yakone_0_0, 105
+Yakone_0_1, 87
+Yakone_0_2, 37
+Yakone_0_3, 68
+Yakone_0_4, 65
+Tho_0_0, 105
+Tho_0_1, 87
+Tho_0_2, 37
+Tho_0_3, 68
+Tho_0_4, 65
+Rafa_0_0, 105
+Rafa_0_1, 87
+Rafa_0_2, 37
+Rafa_0_3, 68
+Rafa_0_4, 65
+Unalaq_0_0, 105
+Unalaq_0_1, 87
+Unalaq_0_2, 37
+Unalaq_0_3, 68
+Unalaq_0_4, 65
+Wei_0_0, 105
+Wei_0_1, 87
+Wei_0_2, 37
+Wei_0_3, 68
+Wei_0_4, 65
