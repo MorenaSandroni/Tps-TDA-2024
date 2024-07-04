@@ -314,17 +314,18 @@ def run_relations():
         elif option_data == '4':
             print("Por ser volumenes inmanejables no corremos Backtracking, pero contamos con los valores optimos")
             test_files = ['propio_32_4.txt', 'propio_36_4.txt', 'propio_40_4.txt', 'propio_44_4.txt', 'propio_48_4.txt',
-                          'propio_52_4.txt', 'propio_56_4.txt', 'propio_60_4.txt', 'propio_64_4.txt', 'propio_68_4.txt',
-                          'propio_30_6.txt', 'propio_36_6.txt', 'propio_42_6.txt', 'propio_48_6.txt', 'propio_54_6.txt',
-                          'propio_60_6.txt', 'propio_66_6.txt', 'propio_72_6.txt', 'propio_78_6.txt', 'propio_84_6.txt',
-                          'propio_24_8.txt', 'propio_32_8.txt', 'propio_40_8.txt', 'propio_48_8.txt', 'propio_56_8.txt',
-                          'propio_64_8.txt', 'propio_72_8.txt', 'propio_80_8.txt', 'propio_88_8.txt', 'propio_96_8.txt']
+                            'propio_52_4.txt', 'propio_56_4.txt', 'propio_60_4.txt', 'propio_64_4.txt', 'propio_68_4.txt',
+                            'propio_30_6.txt', 'propio_36_6.txt', 'propio_42_6.txt', 'propio_48_6.txt', 'propio_54_6.txt',
+                            'propio_60_6.txt', 'propio_66_6.txt', 'propio_72_6.txt', 'propio_78_6.txt', 'propio_84_6.txt',
+                            'propio_24_8.txt', 'propio_32_8.txt', 'propio_40_8.txt', 'propio_48_8.txt', 'propio_56_8.txt',
+                            'propio_64_8.txt', 'propio_72_8.txt', 'propio_80_8.txt', 'propio_88_8.txt', 'propio_96_8.txt'
+                        ]
 
 
-            expected_values = [2232036, 1674436, 2471184, 3572100, 3444736, 2722500, 3794704, 5134756, 5560164,
-                               6100900, 786264, 1172184, 1997574, 1554486, 2661336, 2973696, 4667544, 3493014,
-                               8582496, 4510134, 387200, 658952, 1095200, 1465472, 3421728, 2080800, 3328200,
-                               3645000, 3886472, 7872512]
+            expected_values = [46294416, 61277584, 49420900, 52157284, 101646724, 88360000, 120297024, 93431556, 125171344,
+                                305970064, 18312054, 16374624, 106294086, 49421400, 75700224, 151021734, 93378150, 66813414,
+                                120314904, 193983576, 5445000, 9627272, 35045192, 32837408, 82330112, 80340488, 105531392,
+                                111840968, 113221152, 125833248]
 
 
             run_file_relation(test_files, expected_values, [distribuir_maestros])

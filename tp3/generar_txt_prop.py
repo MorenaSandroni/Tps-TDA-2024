@@ -1,4 +1,5 @@
 import random
+from itertools import combinations
 
 # Lista de nombres de maestros y habilidades
 nombres_base = [
@@ -10,8 +11,24 @@ nombres_base = [
 ]
 
 def generar_habilidades_base(n):
-    return [int(random.randint(20, 120)) for _ in range(n)]
+    return [int(random.randint(20, 800)) for _ in range(n)]
 
+
+def generar_subgrupos_iguales(n, g):
+    def generar_particiones_util(total_sum, n, g, start, actual):
+        if g == 0:
+            return [[]] if total_sum == 0 else []
+
+        particiones = []
+        for i in range(start, min(700, total_sum // g) + 1):
+            if i <= actual:
+                for particion in generar_particiones_util(total_sum - i, n, g - 1, i, actual):
+                    particiones.append([i] + particion)
+
+        return particiones
+
+    total_sum = sum(range(1, n + 1)) * g // n
+    return generar_particiones_util(total_sum, n, g, 1, 700)
 
 # Función para generar los archivos de texto con los datos solicitados
 def generar_datos(n_archivo, total_elementos, n_grupos):
@@ -21,13 +38,15 @@ def generar_datos(n_archivo, total_elementos, n_grupos):
         f.write(f"# La primera linea indica la cantidad de grupos a formar, las siguientes son de la forma 'nombre maestro, habilidad'\n")
         f.write(f"{n_grupos}\n")
         cant_elem_subgrupos = total_elementos//n_grupos
-        habilidades_base = generar_habilidades_base(cant_elem_subgrupos)
-        sum_habilidades = sum(habilidades_base)
+        print(cant_elem_subgrupos)
+        subgrupos_habilidades = generar_subgrupos_iguales(cant_elem_subgrupos, n_grupos)
+        print(subgrupos_habilidades)
+        sum_habilidades = sum(subgrupos_habilidades[0])
         valor_obtenido = (sum_habilidades ** 2) * n_grupos
         for i in range(n_grupos):
             for j in range(cant_elem_subgrupos):
                 nombre = nombres_base[i % len(nombres_base)] + f"_{i//len(nombres_base)}_{j}"
-                habilidad = habilidades_base[j]
+                habilidad = subgrupos_habilidades[i][j]
                 f.write(f"{nombre}, {habilidad}\n")
     return archivo_nombre, valor_obtenido
 
